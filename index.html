@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe - Create Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #gameLinkContainer {
+            display: none;
+            margin-top: 20px;
+        }
+        #gameLink {
+            padding: 10px;
+            border: 1px solid #ccc;
+            background: #fff;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+        }
+        #copyButton {
+            margin-top: 10px;
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            transition: background 0.3s;
+        }
+        #copyButton:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe for Two</h1>
+    <p>Click the button to create a game</p>
+    <button onclick="createGame()">Create Game</button>
+
+    <div id="gameLinkContainer">
+        <p>Share this link with a friend:</p>
+        <input type="text" id="gameLink" readonly>
+        <button id="copyButton" onclick="copyGameLink()">Copy</button>
+    </div>
+
+    <script>
+        async function createGame() {
+            try {
+                const response = await fetch('http://localhost:4000/create_game.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+        
+                if (data.gameLink) {
+                    document.getElementById('gameLink').value = data.gameLink;
+                    document.getElementById('gameLinkContainer').style.display = 'block';
+                } else {
+                    alert('Failed to generate game link. Please try again.');
+                }
+            } catch (error) {
+                alert('Error creating game. Please check your internet connection.');
+            }
+        }
+
+        function copyGameLink() {
+            const gameLinkInput = document.getElementById('gameLink');
+            gameLinkInput.select();
+            gameLinkInput.setSelectionRange(0, 99999); // For mobile support
+            navigator.clipboard.writeText(gameLinkInput.value)
+                .then(() => alert('Game link copied!'))
+                .catch(() => alert('Failed to copy game link.'));
+        }
+    </script>
+</body>
+</html>
